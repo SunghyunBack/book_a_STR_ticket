@@ -1,0 +1,92 @@
+<!-- 웹앱 매니페스트 = 앱 스토어를 거치지 않고 장치의 홈 화면에 설치할수 있는 웹 사이트를 구성한다.-->
+<!-- 앱에 대한 정보를 담고 JSON파일이다.-->
+<!-- 배경색은 어떠한 색인지, 앱의 이름은 무엇인지, 홈스크린 화면에 추가할 아이콘 등등의 정보를 담고 있다.-->
+<!-- 웹앱 매니페스트는 manifest.json 파일명을 대부분 사용한다.-->
+
+
+<button class="btn_large wx200 btn_burgundy_dark2 val_m corner" type="button" id="mStartButton"></button>
+
+<!--
+Chrome Extension이란?
+ - Chrome 브라우저의 작은 소프트웨어 프로그램이다.
+
+활용 분야
+1. 생산성 도구
+2. 웹 페이지 콘텐츠 보강
+3. 정보 집계
+4. 게임
+
+동작 방식
+- 웹과 동일하게 HTML, Javascript 및 CSS와 같은 웹 기술을 기반으로 제공
+
+
+아키텍처
+- Manifest
+    Chrome Extension에 중요한 정보를 제공하는 매니페스트(설정)파일
+
+- 백그라운드 스크립트(Background Script)
+    정의: Chrome Extension이벤트 핸들러로 리스터가 포함되어 있는 스크립트
+        이벤트가 발생하고 지시된 논리를 수행할 때까지 휴면 상태
+        필요할 때만 로드되고 유휴상태가 되면 언로드 됨
+
+- 화면 UI(UI Elements)
+    사용자 인터페이스
+    컨텍스트 메뉴, 검색주소창 사용, 단축키 등 여러가지 형태의 UI가 포함될 수 있다.
+
+- 콘텐트 스크립트(Content Script)
+    웹 페이지를 읽거나 쓰는 Extension 프로그램은 콘텐츠 스크립트이다.
+    로드된 페이지의 컨텍스트에서 실해오디는 Javascript가 포함되어 있어 브라우저가 방문하는 DOM을 읽고 수정할수 있다.
+
+- 옵션 페이지(Option Page)
+    Chrome Extension 프로그램을 사용자 지정을 사용하고 싶을 때 사용
+
+
+
+아래의 4개는 무조건 필요한 항목들이다.
+   name은 파일의 이름이라고 생각하면 된다.
+   manifest_version은  manifest의 버젼을 뜻한다.
+    version은 만든 파일에 대한 버전을 뜻한다.
+    description은 파일에 대한 상세 설명 같은걸로 보변된다.
+========================================================
+
+background = 크롬 익스텐션이 실제로 동작하는데 필요한 스크립트이다.
+                익스텐션의 이벤트 핸들러이며 익스텐션에 중요한 브라우저 이벤트들의 리스너들을 포함한다.
+
+
+정말 중요!!!!
+https://developer.chrome.com/docs/extensions/mv3/content_scripts/ 참고
+content_scripts = 웹페이지의 context에서 실행되는 javascript파일이다.
+                  웹페이지의 내용을 읽거나 변경할수 있다.
+키
+matches : 필수
+            contentscript가 주이보딜 페이지를 지정한다.
+            즉 내가 사용하고 자하는 주소(URL)을 지정하는것이다.
+js : 선택
+      JavaScript 파일 리스트는 일ㅊ하는 페이지로 주입된다.
+      배열에 나타나는 순서대로 주입된다.
+
+run_at : 선택
+           js안에 있는 파일들이 주입되는 경우 컨트롤 한다.
+           값들로는 “document_start”, “document_end”, 또는 “document_idle” 가 있다.
+           “document_start” = 파일들은 css파일이 주입된 후에 주입된다. 그러나 다른 DOM이 생성되거나
+                                다른 스크립트들이 실행되기 전에 주입된다.
+           “document_end” = 파일들은 DOM이 완료된 후 바로 주입된다. 그러나 이미지, 프레임과 같은 다른
+                              subresource들이 로드되기 전에 주입된다.
+           기본값 “document_idle” = “document_end” 와 window.onload이벤트 직후 사이의 시간을
+                                    선택하여 파일을 주입한다. 정확한 주입순간은 문서가 얼마나 복잡한지,
+                                    페이지 로드 시간이 얼마나 긴지, 페이로드 속도를 위해 최적화되어있다.
+
+
+all_frames : 선택
+              content script가 일치하는 페이지 도는 오직 top frame에서 content script가 실행한다.
+              기본값은 false이며 이때는 top grame만 일치하는 것을 뜻한다.
+
+web_accessible_resources : 웹 페이지나 다른 확장 프로그램ㅇ서 액세스 할 수 있는 확장 프로그램 내의 파일이다.
+
+
+
+
+
+
+
+-->

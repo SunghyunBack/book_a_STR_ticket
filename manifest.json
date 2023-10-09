@@ -1,0 +1,25 @@
+{
+  "name" : "srt select chrome extension",
+
+  "version" : "0.1",
+  "description" : "nano",
+  "permissions" : ["storage", "tabs"],
+  "action":{
+   "default_popup": "popup.html"
+  },
+  "background" : {
+    "page" : "background.html"
+  },
+  "content_scripts" : [
+    {
+      "matches" : ["https://etk.srail.co.kr/hpg/hra/01/selectScheduleList.do*"],
+      "js" : ["jquery-3.4.1.min.js", "srtScript.js"],
+      "run_at" : "document_end",
+      "all_frames" : true
+    }
+  ],
+  "web_accessible_resources" : [
+    "success.wav"
+  ],
+  "manifest_version": 2
+}
