@@ -5,7 +5,7 @@
   "description" : "nano",
   "permissions" : ["storage", "tabs"],
   "background" : {
-    "page" : "background.html"
+    "service_worker": "background.js"
   },
   "content_scripts" : [
     {
@@ -16,7 +16,10 @@
     }
   ],
   "web_accessible_resources" : [
-    "success.wav"
+    {
+      "resources": ["success.wav"],
+      "matches": ["<all_urls>"]
+    }
   ],
   "manifest_version": 3
 }

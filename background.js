@@ -1,5 +1,9 @@
 //  브라우저 영역에서 작동하는 스크립트이다.
 
+chrome.runtime.onInstalled.addListener(() => {
+    console.log('Extension installed!');
+});
+
 function playSuccessAudio(){
     var audio = new Audio();
 //     Audio객체를 사용하여 재생/일시 정지 등을 컨트롤한다.
