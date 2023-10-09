@@ -18,5 +18,5 @@
   "web_accessible_resources" : [
     "success.wav"
   ],
-  "manifest_version": 2
+  "manifest_version": 3
 }
