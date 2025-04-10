@@ -26,7 +26,7 @@ function makeStartButton() {
         if (globalFlag) {
             updateStatus(false);
         } else {
-            if (atLeastOneCheck()) {
+            if (alLeastOneCheck()) {
                 updateStatus(true);
             } else {
                 alert("체크된 항목이 없습니다.")
