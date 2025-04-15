@@ -114,75 +114,49 @@ function updateStatus(status) {
 // 대상들을 지정 및 생성?
 function doJob(firstClassList, economyClassList) {
     if (globalFlag) {
-        // SRT 예매 페이지의 세션 타임아웃(약 3분)을 방지하기 위한 새로고침 설정
         // window.onload는 웹 브라우저 내의 모든 요소가 준비가 되어야 실행 할수 있도록 하는것이다.
         // 웹 브라우저 내의 모든 요소가 준비된 이후 지정된 시간이 지나면 새로고침을 하겠다는 의미이다.
         window.onload = refreshPageAfter(refreshInterval);
     }
-
-    // SRT 예매 페이지의 메인 컨텐츠 영역 선택
-    // sub_con_area는 열차 조회 결과가 표시되는 테이블을 포함하는 영역
+    // srt 예약 홈페이지에 sub_con_area의 클래스 이름을 가진 태그가 여러개 있는데 그중 첫번째 태그를 선택하겠다.
     var parentForAddingStartButton = document.getElementsByClassName("sub_con_area")[0];
     var startButton = makeStartButton();
     // 선택한 sub_con_area의 클래스 이름을 가진 태그 자식 태그를 하나 만드는데 위에 정의했던 startButton을 정의하겠다.
     // 이로 인해 내가 원하는 자리에 버튼이 생성되게 되었다.
     parentForAddingStartButton.appendChild(startButton);
 
-    // SRT 예매 페이지의 열차 조회 결과 테이블의 tbody 선택
     var tbodyList = document.getElementsByTagName("tbody");
     if (tbodyList.length == 0 && globalFlag) {
         updateStatus(false);
         return;
     }
 
-    // 각 열차 정보 행(tr)을 순회
     var searchedRows = tbodyList[0].children;
     var targetButtons = [];
 
     for (var i = 0; i < searchedRows.length; ++i) {
         var row = searchedRows[i];
-        // SRT 열차 번호 (예: SRT-123)
         var trainNumber = row.children[2].innerText;
-        // 특실(1등석) 좌석 정보가 있는 td
         var tdForFirstClass = row.children[5];
-        // 일반실(2등석) 좌석 정보가 있는 td
         var tdForEconomyClass = row.children[6];
 
-        // 특실 예약 체크박스 생성
         checkBtn = document.createElement("input");
         checkBtn.setAttribute("type", "checkbox");
         checkBtn.setAttribute("class", "mCheckboxForFirstClass");
 
         if (firstClassList.includes(trainNumber)) {
             checkBtn.checked = true;
-            // 특실 예약 버튼(a 태그) 선택 - 예약하기 버튼만 선택
-            var firstClassButtons = tdForFirstClass.getElementsByTagName("a");
-            for (var j = 0; j < firstClassButtons.length; j++) {
-                var button = firstClassButtons[j];
-                // '예약하기' 버튼만 선택 (class가 'btn_small btn_burgundy_dark'인 버튼)
-                if (button.className.includes('btn_burgundy_dark')) {
-                    targetButtons.push([button]);
-                }
-            }
+            targetButtons.push(Array.from(tdForFirstClass.getElementsByTagName("a")));
         }
         tdForFirstClass.insertBefore(checkBtn, tdForFirstClass.firstChild);
 
-        // 일반실 예약 체크박스 생성
         checkBtn2 = document.createElement("input");
         checkBtn2.setAttribute("type", "checkbox");
         checkBtn2.setAttribute("class", "mCheckboxForEconomyClass");
-
+        // checkBtn2.checked = economyClassList.includes(trainNumber);
         if (economyClassList.includes(trainNumber)) {
             checkBtn2.checked = true;
-            // 일반실 예약 버튼(a 태그) 선택 - 예약하기 버튼만 선택
-            var economyButtons = tdForEconomyClass.getElementsByTagName("a");
-            for (var j = 0; j < economyButtons.length; j++) {
-                var button = economyButtons[j];
-                // '예약하기' 버튼만 선택 (class가 'btn_small btn_burgundy_dark'인 버튼)
-                if (button.className.includes('btn_burgundy_dark')) {
-                    targetButtons.push([button]);
-                }
-            }
+            targetButtons.push(Array.from(tdForEconomyClass.getElementsByTagName("a")));
         }
         tdForEconomyClass.insertBefore(checkBtn2, tdForEconomyClass.firstChild);
 
@@ -199,15 +173,12 @@ function doJob(firstClassList, economyClassList) {
         updateStatus(false);
     }
 
-    // 선택된 예약 버튼 클릭 처리
     for (var i = 0; i < targetButtons.length; ++i) {
         console.log(targetButtons[i])
         var onClickAttr = targetButtons[i].getAttribute('onclick');
-        // SRT 예매 페이지의 예약 버튼 onclick 이벤트 확인
-        if (onClickAttr && onClickAttr.startsWith("reservationAfterMsg")) {
+        if (onClickAttr && onClickAttr.startsWith("requestReservationInfo")) {
             targetButtons[i].click();
             updateStatus(false);
-            // 예약 성공 시 알림음 재생
             chrome.runtime.sendMessage({ type: 'playSccessAudio' }, function (data) {
             });
         }
