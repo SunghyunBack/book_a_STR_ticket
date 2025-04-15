@@ -4,7 +4,7 @@
 //  createElement로 Element를 생성하여 원하는 UI를 추가할수도 있다.
 
 var idOfTimeOut;
-var globalFlag = false;
+var inProgress = false;
 const refreshInterval = 2200; //ms 새로고침에 대한 시간을 가리킨다.
 
 // 버튼을 만들고 페이지의 상태마다 필요한 내용에 대한 함수를 정의했다.
@@ -25,14 +25,17 @@ function makeStartButton() {
     startButton.addEventListener("click", function (event) {
         if (globalFlag) {
             updateStatus(false);
+            startButton.innerText="시작";
         } else {
             if (alLeastOneCheck()) {
                 updateStatus(true);
+                startBUtton.innerText="중지";
             } else {
                 alert("체크된 항목이 없습니다.")
             }
         }
     });
+    document.getElementsByClassName("sub_con_area")[0].appendChild(startButton);
     return startButton;
 }
 
@@ -47,22 +50,23 @@ function refreshPageAfter(timeoutPeriod) {
     // 그중 true로 인해 캐시가 있더라도 서버의 최신 콘텐츠를 얻을수 있다.
     //  단점으로 콘텐츠를 날려 데이터를 잃거나 깜빡거려 경험에 영향을 줄수 있다.
     // setTimeOut()는 어떤 코드를 바로 실행하지 않고 일정 시간 기다린 후 실행하고 싶을때 사용하는 코드이다.
-    idOfTimeOut = setTimeout("location.reload(true);", timeoutPeriod);
+    let reloadButton = document.getElementById("search_top_tag").getElementsByTagName("input")[0];
+    idOfTimeOut = setTimeout(function () {reloadButton.click()}, timeoutPeriod);
 }
 
 
 
 //  updateStatus()에 대한 함수를 정의한다.
 function updateStatus(status) {
-    // 나중에 만들어질 체크 박스를 의미한다.
-    var checkboxesForFirstClass = document.getElementsByClassName("mCheckboxForFirstClass");
-    var checkboxesForEconomyClass = document.getElementsByClassName("mCheckboxForEconomyClass");
     // 체크되어진 박스를 담을 list이다.
-    var firstClassList = [];
-    var economyClassList = [];
+    let firstClassList = [];
+    let economyClassList = [];
 
 
     if (status) {
+    // 나중에 만들어질 체크 박스를 의미한다.
+    var checkboxesForFirstClass = document.getElementsByClassName("mCheckboxForFirstClass");
+    var checkboxesForEconomyClass = document.getElementsByClassName("mCheckboxForEconomyClass");
         for (var i = 0; i < checkboxesForFirstClass.length; ++i) {
             if (checkboxesForFirstClass[i].checked) {
                 // 웹페이지 상 parent는 1행을 뜻한다.
@@ -97,13 +101,10 @@ function updateStatus(status) {
             economyClassList: economyClassList
         }
     }, function () {
-        globalFlag = status;
-        startButton = document.getElementById("mStartButton");
+        inProgress =status;
         if (status) {
-            startButton.innerText = "중지";
             location.reload(true);
         } else {
-            startButton.innerText = "시작";
             clearTimeout(idOfTimeOut);
         }
         console.log("status setting completed : " + status + ", firstClassList : " + firstClassList + ", economyClassList : " + economyClassList);
@@ -113,98 +114,68 @@ function updateStatus(status) {
 
 // 대상들을 지정 및 생성?
 function doJob(firstClassList, economyClassList) {
-    if (globalFlag) {
+    if (inProgress) {
+        let sleepTime = 3000+Math.random()*3000;
+        console.log("sleep time:"+ sleepTime);
         // window.onload는 웹 브라우저 내의 모든 요소가 준비가 되어야 실행 할수 있도록 하는것이다.
         // 웹 브라우저 내의 모든 요소가 준비된 이후 지정된 시간이 지나면 새로고침을 하겠다는 의미이다.
-        window.onload = refreshPageAfter(refreshInterval);
+        window.onload = refreshPageAfter(sleepTime);
     }
-    // srt 예약 홈페이지에 sub_con_area의 클래스 이름을 가진 태그가 여러개 있는데 그중 첫번째 태그를 선택하겠다.
-    var parentForAddingStartButton = document.getElementsByClassName("sub_con_area")[0];
-    var startButton = makeStartButton();
-    // 선택한 sub_con_area의 클래스 이름을 가진 태그 자식 태그를 하나 만드는데 위에 정의했던 startButton을 정의하겠다.
-    // 이로 인해 내가 원하는 자리에 버튼이 생성되게 되었다.
-    parentForAddingStartButton.appendChild(startButton);
 
-    var tbodyList = document.getElementsByTagName("tbody");
-    if (tbodyList.length == 0 && globalFlag) {
-        updateStatus(false);
+    let startButton = makeStartButton();
+
+    let tbodyList = document.getElementsByTagName("tbody");
+    if(tbodyList.length ==0 && inProgress){
+        startButton.InnerText = "시작";
+        updatesStatus(false);
         return;
     }
+    let searchedRows = tbodyList[0].children;
+    let targetButtons = [];
+    for(var i=0; i<searchedRows.length; ++i){
+        let row = searchedRows[i];
+        let trainNumber = row.children[2].innerText;
+        let tdForFirstClass = row.children[5];
+        let tdForEconomyClass = row.children[6];
 
-    var searchedRows = tbodyList[0].children;
-    var targetButtons = [];
-
-    for (var i = 0; i < searchedRows.length; ++i) {
-        var row = searchedRows[i];
-        var trainNumber = row.children[2].innerText;
-        var tdForFirstClass = row.children[5];
-        var tdForEconomyClass = row.children[6];
-
-        checkBtn = document.createElement("input");
+        let checkBtn = document.createElement("input");
         checkBtn.setAttribute("type", "checkbox");
-        checkBtn.setAttribute("class", "mCheckboxForFirstClass");
+        checkBtn.setAttribute("class","mCheckboxForFirstClass");
 
-        if (firstClassList.includes(trainNumber)) {
-            checkBtn.checked = true;
-            targetButtons.push(Array.from(tdForFirstClass.getElementsByTagName("a")));
+        if(firstClassList.includes(trainNumber){
+            checkBun.checked =true;
+            targetButtons.push(tdForFirstClass.getElementsByTagName("a")[0]);
         }
         tdForFirstClass.insertBefore(checkBtn, tdForFirstClass.firstChild);
 
-        checkBtn2 = document.createElement("input");
-        checkBtn2.setAttribute("type", "checkbox");
-        checkBtn2.setAttribute("class", "mCheckboxForEconomyClass");
-        // checkBtn2.checked = economyClassList.includes(trainNumber);
-        if (economyClassList.includes(trainNumber)) {
-            checkBtn2.checked = true;
-            targetButtons.push(Array.from(tdForEconomyClass.getElementsByTagName("a")));
+        let checkBtn2 = document.createElement("input");
+        checkBtn2.setAttribute("type","checkbox");
+        checkBtn2.setAttribute("class","mCheckboxForEconomyClass");
+
+        if(economyClassList.Includes(trainNumber){
+            checkBtn2.checked =true;
+            targetButtons.push(tdForEconomyClass.getElementsByTagName("a")[0]);
         }
         tdForEconomyClass.insertBefore(checkBtn2, tdForEconomyClass.firstChild);
 
-        if (globalFlag) {
-            console.log("test");
-            checkBtn.onclick = canNotModifyCheckBox;
-            checkBtn2.onclick = canNotModifyCheckBox;
-        }
+        checkBtn.onclick = canNotModifyCheckBox;
+        checkBtn2.onclick = canNotModifyCheckBox;
+        
     }
 
-    targetButtons = targetButtons.flat(); //평탄화
-    if (targetButtons.length <= 0) {
+    if(targetButtons.length <=0){
         console.log("flag down");
         updateStatus(false);
     }
 
-    for (var i = 0; i < targetButtons.length; ++i) {
-        console.log(targetButtons[i])
-        var onClickAttr = targetButtons[i].getAttribute('onclick');
-        if (onClickAttr && onClickAttr.startsWith("requestReservationInfo")) {
+    for(let i=0; i<targetButtons.length; ++i){
+        let onClickAttr = targetButtons[i].getAttribute('onclick');
+        if(onClickAttr && onClickAttr.startsWith("reservationAfterMsg")){
+            targetButtons[i].setAttribute("onclick", onClickAttr.replace("MRT200164", "");
             targetButtons[i].click();
             updateStatus(false);
-            chrome.runtime.sendMessage({ type: 'playSccessAudio' }, function (data) {
-            });
         }
     }
-}
-
-function canNotModifyCheckBox() {
-    if (globalFlag) {
-        alert("작동 중 수정은 불가능 합니다.");
-        return false;
-    }
-}
-
-function alLeastOneCheck() {
-    const checkboxesForFirstClass = document.getElementsByClassName("mCheckboxForFirstClass");
-    const checkboxesForEconomyClass = document.getElementsByClassName("mCheckboxForEconomyClass");
-
-    for (var i = 0; i < checkboxesForFirstClass.length; ++i) {
-        if (checkboxesForFirstClass[i].checked) {
-            return true;
-        }
-    }
-    for (var i = 0; i < checkboxesForEconomyClass.length; ++i) {
-        return true;
-    }
-    return false;
 }
 
 
@@ -213,12 +184,12 @@ function alLeastOneCheck() {
 // chrome.storage.syne.get을 사용하여 저장된 데이터를 가지고 온다.
 
 chrome.storage.sync.get('mData', function (result) {
-    globalFlag = false;
+    inProgress = false;
     var firstClassList = [];
     var economyClassList = [];
 
     if (result.mData) {
-        globalFlag = result.mData.flag;
+        inProgress = result.mData.flag;
 
 
         if (Array.isArray(result.mData.firstClassList)) {
@@ -229,6 +200,6 @@ chrome.storage.sync.get('mData', function (result) {
         }
     }
 
-    console.log("flag:" + globalFlag + ", fList:" + firstClassList + ", eList:" + economyClassList);
+    console.log("flag:" + inProgress + ", fList:" + firstClassList + ", eList:" + economyClassList);
     doJob(firstClassList, economyClassList);
 });
